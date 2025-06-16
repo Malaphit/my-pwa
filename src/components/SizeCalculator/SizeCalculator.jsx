@@ -1,64 +1,130 @@
-import { useState } from "react";
-import { SIZE_TABLE } from "./sizeTable";
-import { findSizeByLength, calculateDeviations, getRecommendation } from "./sizeLogic";
+import React, { useState, useEffect } from "react";
+import "../styles/SizeCalculator.css";
+import {
+  SIZE_KEYS,
+  findSizeByLength,
+  calculateDeviations,
+  getRecommendation,
+  getMatchColor,
+} from "./sizeLogic";
+
+const FIELD_LABELS = {
+  length: "Длина",
+  punches: "Пучки",
+  rise: "Подъём",
+  diagonal: "Косой проход",
+};
 
 export default function SizeCalculator() {
-  const [measurements, setMeasurements] = useState({ length: "", punches: "", rise: "", diagonal: "" });
-  const [result, setResult] = useState(null);
-  const [sandalMode, setSandalMode] = useState(false);
+  const initial = { length: "", punches: "", rise: "", diagonal: "" };
+  const [m, setM] = useState(initial);
+  const [sandal, setSandal] = useState(false);
+  const [currSize, setCurrSize] = useState(null);
+  const [dev, setDev] = useState(null);
+  const [notes, setNotes] = useState([]);
+  const [history, setHistory] = useState([]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("sizeHistory");
+    if (saved) {
+      setHistory(JSON.parse(saved));
+    }
+  }, []);
 
   const handleChange = (e) => {
-    setMeasurements({ ...measurements, [e.target.name]: parseInt(e.target.value, 10) || 0 });
+    setM({ ...m, [e.target.name]: +e.target.value });
   };
 
-  const handleSubmit = () => {
-    const size = findSizeByLength(measurements.length, sandalMode);
-    if (!size) return setResult({ error: "Не найден подходящий размер." });
+  const choose = (size) => {
+    setCurrSize(size);
+    const d = calculateDeviations(size, m);
+    setDev(d);
+    const recs = getRecommendation(d);
+    setNotes(recs);
 
-    const deviation = calculateDeviations(size, measurements);
-    const recommendation = getRecommendation(deviation, size);
+    const entry = {
+      date: new Date().toLocaleString(),
+      inputs: m,
+      sandal,
+      size,
+      deviations: d,
+      notes: recs,
+    };
 
-    setResult({ size, deviation, recommendation });
+    const updatedHistory = [entry, ...history].slice(0, 100);
+    setHistory(updatedHistory);
+    localStorage.setItem("sizeHistory", JSON.stringify(updatedHistory));
+  };
+
+  const calc = () => {
+    const sz = findSizeByLength(m.length, sandal);
+    sz && choose(sz);
+  };
+
+  const step = (dir) => {
+    if (currSize == null) return;
+    const idx = SIZE_KEYS.indexOf(currSize);
+    const ni = idx + dir;
+    if (ni >= 0 && ni < SIZE_KEYS.length) choose(SIZE_KEYS[ni]);
   };
 
   return (
-    <div className="p-4 rounded-xl bg-white shadow">
-      <h2 className="text-xl mb-4">Подбор размера</h2>
-      <div className="grid grid-cols-2 gap-2">
-        {["length", "punches", "rise", "diagonal"].map((key) => (
+    <div className="size-calc-container">
+      <h1 className="size-calc-title">Калькулятор размера обуви</h1>
+
+      {Object.keys(FIELD_LABELS).map((key) => (
+        <div key={key} className="size-calc-row">
+          <label htmlFor={key} className="size-calc-label">
+            {FIELD_LABELS[key]} (мм):
+          </label>
           <input
-            key={key}
             type="number"
             name={key}
-            placeholder={key}
-            value={measurements[key]}
+            id={key}
+            value={m[key]}
             onChange={handleChange}
-            className="p-2 border rounded"
+            className="size-calc-input"
           />
-        ))}
-        <label className="col-span-2 flex items-center gap-2">
-          <input type="checkbox" checked={sandalMode} onChange={(e) => setSandalMode(e.target.checked)} />
-          Режим сандалий
-        </label>
-        <button className="col-span-2 bg-blue-500 text-white p-2 rounded" onClick={handleSubmit}>
+        </div>
+      ))}
+
+      <label className="size-calc-checkbox-label">
+        <input
+          type="checkbox"
+          checked={sandal}
+          onChange={() => setSandal(!sandal)}
+          className="size-calc-checkbox"
+        />
+        <span>Сандалии (запас 4–8 мм)</span>
+      </label>
+
+      <div className="size-calc-button-group">
+        <button onClick={calc} className="size-calc-button">
           Подобрать размер
+        </button>
+        <button onClick={() => step(-1)} disabled={!currSize} className="size-calc-step">
+          –
+        </button>
+        <button onClick={() => step(+1)} disabled={!currSize} className="size-calc-step">
+          +
         </button>
       </div>
 
-      {result && (
-        <div className="mt-4">
-          {result.error ? (
-            <p className="text-red-500">{result.error}</p>
-          ) : (
-            <>
-              <p>Рекомендуемый размер: <b>{result.size}</b></p>
-              <ul className="list-disc list-inside text-sm text-gray-700">
-                {result.recommendation.map((line, i) => (
-                  <li key={i}>{line}</li>
-                ))}
-              </ul>
-            </>
-          )}
+      {currSize != null && dev && (
+        <div className={`size-result ${getMatchColor(dev)}`}>
+          <h2 className="size-result-title">Размер: {currSize}</h2>
+          <ul className="size-result-list">
+            {Object.entries(dev).map(([k, v]) => (
+              <li key={k}>
+                <span className="size-result-label">{FIELD_LABELS[k]}</span>: {v} мм
+              </li>
+            ))}
+          </ul>
+          <div className="size-result-notes">
+            {notes.map((t, i) => (
+              <p key={i}>{t}</p>
+            ))}
+          </div>
         </div>
       )}
     </div>

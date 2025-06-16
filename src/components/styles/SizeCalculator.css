@@ -1,0 +1,126 @@
+.size-calc-container {
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 24px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .size-calc-title {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  
+  .size-calc-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .size-calc-label {
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .size-calc-input {
+    width: 100px;
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.2s ease;
+  }
+  
+  .size-calc-input:focus {
+    outline: none;
+    border-color: #4a90e2;
+  }
+  
+  .size-calc-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    font-size: 16px;
+  }
+  
+  .size-calc-button-group {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+  
+  .size-calc-button {
+    background: #4a90e2;
+    color: #fff;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.3s;
+  }
+  
+  .size-calc-button:hover {
+    background: #357ac8;
+  }
+  
+  .size-calc-step {
+    background: #e0e0e0;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 18px;
+    cursor: pointer;
+  }
+  
+  .size-calc-step:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .size-result {
+    padding: 20px;
+    border-radius: 12px;
+  }
+  
+  .size-result.green {
+    background-color: #e6f9e6;
+  }
+  
+  .size-result.yellow {
+    background-color: #fffbe6;
+  }
+  
+  .size-result.red {
+    background-color: #fdecea;
+  }
+  
+  .size-result-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 12px;
+  }
+  
+  .size-result-list {
+    list-style: disc;
+    padding-left: 20px;
+    margin-bottom: 12px;
+  }
+  
+  .size-result-label {
+    font-weight: 500;
+  }
+  
+  .size-result-notes {
+    font-style: italic;
+    color: #444;
+    font-size: 14px;
+  }
+  

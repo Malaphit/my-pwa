@@ -1,15 +1,16 @@
 import { SIZE_TABLE } from "./sizeTable";
 
-export const findSizeByLength = (length, sandalMode = false) => {
+export const SIZE_KEYS = Object.keys(SIZE_TABLE).map(Number).sort((a, b) =>
+  SIZE_TABLE[a].length - SIZE_TABLE[b].length
+);
+
+export const findSizeByLength = (lengthMm, sandalMode = false) => {
   const [min, max] = sandalMode ? [4, 8] : [8, 13];
-  const sizes = Object.keys(SIZE_TABLE).map(Number).sort((a, b) => SIZE_TABLE[a].length - SIZE_TABLE[b].length);
-
-  for (let size of sizes) {
-    const diff = SIZE_TABLE[size].length - length;
-    if (diff >= min) return size;
+  for (const s of SIZE_KEYS) {
+    const diff = SIZE_TABLE[s].length - lengthMm;
+    if (diff >= min) return s;
   }
-
-  return sizes[0] || null;
+  return SIZE_KEYS[0] || null;
 };
 
 export const calculateDeviations = (size, user) => {
@@ -18,31 +19,22 @@ export const calculateDeviations = (size, user) => {
     length: data.length - user.length,
     punches: data.punches - user.punches,
     rise: data.rise - user.rise,
-    diagonal: data.diagonal - user.diagonal
+    diagonal: data.diagonal - user.diagonal,
   };
 };
 
-export const getRecommendation = (deviation, currentSize) => {
-  let notes = [];
-
-  const { punches, rise, diagonal } = deviation;
-  const toNum = (v) => (typeof v === "number" ? v : Infinity);
-
-  if (toNum(punches) > 15 || toNum(rise) > 15) {
-    notes.push("Рекомендуется меньший размер (пучки или подъём слишком велики).");
-  }
-
-  if (punches < -10) notes.push("Пучки слишком малы, возможно, нужна стелька или другой размер.");
-  if (rise < -10) notes.push("Подъём слишком мал.");
-  if (diagonal < -15) notes.push("Косой проход слишком мал.");
-
-  if (notes.length === 0) {
-    if (punches >= 0 && punches <= 10 && rise >= 0 && rise <= 10 && diagonal >= -5 && diagonal <= 10) {
-      notes.push("Размер подходит отлично.");
-    } else {
-      notes.push("Размер может подойти, но проверьте параметры.");
-    }
-  }
-
+export const getRecommendation = (dev) => {
+  const notes = [];
+  if (dev.punches > 15 || dev.rise > 15) notes.push("Ширина или подъём слишком велики; рассмотрите меньший размер.");
+  if (dev.punches < -10) notes.push("Пучки слишком малы.");
+  if (dev.rise < -10) notes.push("Подъём слишком мал.");
+  if (dev.diagonal < -15) notes.push("Косой проход слишком мал.");
+  if (!notes.length) notes.push("Размер подходит отлично.");
   return notes;
+};
+
+export const getMatchColor = (dev) => {
+  const bad = dev.punches < -10 || dev.punches > 15 || dev.rise < -10 || dev.rise > 15 || dev.diagonal < -15;
+  const warning = dev.punches < 0 || dev.rise < 0 || dev.diagonal < 0;
+  return bad ? "red" : warning ? "yellow" : "green";
 };
