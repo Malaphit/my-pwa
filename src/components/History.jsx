@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import "./styles/History.css";
 
 const FIELD_LABELS = {
   length: "Длина",
@@ -23,25 +24,30 @@ export default function History() {
   };
 
   return (
-    <div className="max-w-xl mx-auto mt-10 p-6 bg-gray-50 shadow-lg rounded-xl space-y-4">
-      <h2 className="text-xl font-bold text-center">История расчётов</h2>
+    <div className="history-container">
+      <h2 className="history-title">История расчётов</h2>
       {history.length === 0 ? (
-        <p className="text-center text-gray-500">История пуста</p>
+        <p className="history-empty">История пуста</p>
       ) : (
         <>
-          <ul className="space-y-3">
+          <ul className="history-list">
             {history.map((entry, index) => (
-              <li key={index} className="p-4 border rounded-md bg-white">
-                <div className="text-sm text-gray-500">{entry.date}</div>
-                <div className="font-medium text-blue-700">Размер: {entry.size}</div>
-                <div className="text-sm text-gray-700">
+              <li key={index} className="history-entry">
+                <div className="entry-date">{entry.date}</div>
+
+                {entry.fullName && (
+                  <div className="entry-name">ФИО: {entry.fullName}</div>
+                )}
+
+                <div className="entry-size">Размер: {entry.size}</div>
+
+                <div className="entry-inputs">
                   {Object.entries(entry.inputs).map(([k, v]) => (
-                    <span key={k} className="mr-2">
-                      {FIELD_LABELS[k]}: {v}мм
-                    </span>
+                    <span key={k}>{FIELD_LABELS[k]}: {v}мм</span>
                   ))}
                 </div>
-                <div className="text-xs text-gray-500 italic">
+
+                <div className="entry-notes">
                   {entry.notes.map((t, i) => (
                     <div key={i}>• {t}</div>
                   ))}
@@ -49,11 +55,8 @@ export default function History() {
               </li>
             ))}
           </ul>
-          <div className="text-center">
-            <button
-              onClick={clearHistory}
-              className="mt-4 bg-red-100 hover:bg-red-200 text-red-600 px-4 py-2 rounded-md text-sm"
-            >
+          <div className="history-actions">
+            <button onClick={clearHistory} className="clear-btn">
               Очистить историю
             </button>
           </div>

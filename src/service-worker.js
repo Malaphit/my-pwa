@@ -70,3 +70,25 @@ self.addEventListener('message', (event) => {
 });
 
 // Any other custom service worker logic can go here.
+export function register() {
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/service-worker.js').then(registration => {
+        console.log('✅ SW registered: ', registration);
+
+        if (registration.waiting) {
+          console.log('⚠️ Service Worker is waiting to activate.');
+        }
+        if (registration.installing) {
+          console.log('⏳ Service Worker installing.');
+        }
+
+        registration.onupdatefound = () => {
+          console.log('🆕 New update found!');
+        };
+      }).catch(error => {
+        console.error('❌ SW registration failed: ', error);
+      });
+    });
+  }
+}

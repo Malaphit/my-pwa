@@ -9,6 +9,7 @@ import {
 } from "./sizeLogic";
 
 const FIELD_LABELS = {
+  fullName: "ФИО клиента",
   length: "Длина",
   punches: "Пучки",
   rise: "Подъём",
@@ -16,7 +17,13 @@ const FIELD_LABELS = {
 };
 
 export default function SizeCalculator() {
-  const initial = { length: "", punches: "", rise: "", diagonal: "" };
+  const initial = {
+    fullName: "",
+    length: "",
+    punches: "",
+    rise: "",
+    diagonal: "",
+  };
   const [m, setM] = useState(initial);
   const [sandal, setSandal] = useState(false);
   const [currSize, setCurrSize] = useState(null);
@@ -32,7 +39,8 @@ export default function SizeCalculator() {
   }, []);
 
   const handleChange = (e) => {
-    setM({ ...m, [e.target.name]: +e.target.value });
+    const { name, value } = e.target;
+    setM({ ...m, [name]: name === "fullName" ? value : +value });
   };
 
   const choose = (size) => {
@@ -44,7 +52,13 @@ export default function SizeCalculator() {
 
     const entry = {
       date: new Date().toLocaleString(),
-      inputs: m,
+      fullName: m.fullName || null,
+      inputs: {
+        length: m.length,
+        punches: m.punches,
+        rise: m.rise,
+        diagonal: m.diagonal,
+      },
       sandal,
       size,
       deviations: d,
@@ -56,7 +70,14 @@ export default function SizeCalculator() {
     localStorage.setItem("sizeHistory", JSON.stringify(updatedHistory));
   };
 
+  const isFormValid = () =>
+    m.length && m.punches && m.rise && m.diagonal;
+
   const calc = () => {
+    if (!isFormValid()) {
+      alert("Пожалуйста, заполните все обязательные поля.");
+      return;
+    }
     const sz = findSizeByLength(m.length, sandal);
     sz && choose(sz);
   };
@@ -70,63 +91,79 @@ export default function SizeCalculator() {
 
   return (
     <div className="size-calc-container">
-      <h1 className="size-calc-title">Калькулятор размера обуви</h1>
+      <div className="size-calc-form"
+                style={{
+                  backgroundImage: 'url("/back.jpg")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'right',
+                  backgroundRepeat: 'no-repeat',
+                  minHeight: '1rem',
+                  maxHeight: '30rem',
+                }}>
+        <h1 className="size-calc-title">Калькулятор размера обуви</h1>
 
-      {Object.keys(FIELD_LABELS).map((key) => (
-        <div key={key} className="size-calc-row">
-          <label htmlFor={key} className="size-calc-label">
-            {FIELD_LABELS[key]} (мм):
-          </label>
-          <input
-            type="number"
-            name={key}
-            id={key}
-            value={m[key]}
-            onChange={handleChange}
-            className="size-calc-input"
-          />
-        </div>
-      ))}
-
-      <label className="size-calc-checkbox-label">
-        <input
-          type="checkbox"
-          checked={sandal}
-          onChange={() => setSandal(!sandal)}
-          className="size-calc-checkbox"
-        />
-        <span>Сандалии (запас 4–8 мм)</span>
-      </label>
-
-      <div className="size-calc-button-group">
-        <button onClick={calc} className="size-calc-button">
-          Подобрать размер
-        </button>
-        <button onClick={() => step(-1)} disabled={!currSize} className="size-calc-step">
-          –
-        </button>
-        <button onClick={() => step(+1)} disabled={!currSize} className="size-calc-step">
-          +
-        </button>
-      </div>
-
-      {currSize != null && dev && (
-        <div className={`size-result ${getMatchColor(dev)}`}>
-          <h2 className="size-result-title">Размер: {currSize}</h2>
-          <ul className="size-result-list">
-            {Object.entries(dev).map(([k, v]) => (
-              <li key={k}>
-                <span className="size-result-label">{FIELD_LABELS[k]}</span>: {v} мм
-              </li>
-            ))}
-          </ul>
-          <div className="size-result-notes">
-            {notes.map((t, i) => (
-              <p key={i}>{t}</p>
-            ))}
+        {Object.keys(FIELD_LABELS).map((key) => (
+          <div key={key} className="size-calc-row">
+            <label htmlFor={key} className="size-calc-label">
+              {FIELD_LABELS[key]}{key !== "fullName"} (мм):
+            </label>
+            <input
+              type={key === "fullName" ? "text" : "number"}
+              name={key}
+              id={key}
+              value={m[key]}
+              onChange={handleChange}
+              className="size-calc-input"
+              required={key !== "fullName"}
+            />
           </div>
+        ))}
+
+        <label className="size-calc-checkbox-label">
+          <input
+            type="checkbox"
+            checked={sandal}
+            onChange={() => setSandal(!sandal)}
+            className="size-calc-checkbox"
+          />
+          <span>Сандалии (запас 4–8 мм)</span>
+        </label>
+
+        <div className="size-calc-button-group"> 
+          <button onClick={calc} className="size-calc-button">
+            Подобрать размер
+          </button>
+          <button onClick={() => step(-1)} disabled={!currSize} className="size-calc-step">
+            –
+          </button>
+          <button onClick={() => step(+1)} disabled={!currSize} className="size-calc-step">
+            +
+          </button>
         </div>
-      )}
+
+        {currSize != null && dev && (
+          <div className={`size-result ${getMatchColor(dev)}`}>
+            <h2 className="size-result-title">
+              Размер: {currSize}
+            </h2>
+            {m.fullName && (
+              <p className="size-result-client">Клиент: {m.fullName}</p>
+            )}
+            <ul className="size-result-list">
+              {Object.entries(dev).map(([k, v]) => (
+                <li key={k}>
+                  <span className="size-result-label">{FIELD_LABELS[k]}</span>: {v} мм
+                </li>
+              ))}
+            </ul>
+            <div className="size-result-notes">
+              {notes.map((t, i) => (
+                <p key={i}>{t}</p>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

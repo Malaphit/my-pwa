@@ -1,10 +1,18 @@
 .size-calc-container {
-    max-width: 500px;
-    margin: 40px auto;
+    min-height: 9vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+  }
+  
+  .size-calc-form {
+    background: rgba(255, 255, 255, 0.9);
     padding: 24px;
-    background: #fff;
     border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
   
   .size-calc-title {
@@ -22,22 +30,18 @@
   }
   
   .size-calc-label {
-    font-weight: 500;
+    font-weight: 1000;
     color: #333;
+    flex: 1;
   }
   
   .size-calc-input {
-    width: 100px;
+    flex: 1;
+    margin-left: 10px;
     padding: 6px 10px;
     border: 1px solid #ccc;
     border-radius: 8px;
     font-size: 16px;
-    transition: all 0.2s ease;
-  }
-  
-  .size-calc-input:focus {
-    outline: none;
-    border-color: #4a90e2;
   }
   
   .size-calc-checkbox-label {
@@ -46,6 +50,7 @@
     gap: 10px;
     margin-bottom: 16px;
     font-size: 16px;
+    font-weight: 1000;
   }
   
   .size-calc-button-group {
@@ -86,6 +91,7 @@
   }
   
   .size-result {
+    margin-top: 120px;
     padding: 20px;
     border-radius: 12px;
   }
@@ -106,6 +112,11 @@
     font-size: 20px;
     font-weight: bold;
     margin-bottom: 12px;
+  }
+  
+  .size-result-client {
+    font-weight: 500;
+    margin-bottom: 8px;
   }
   
   .size-result-list {

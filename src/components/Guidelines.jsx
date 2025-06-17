@@ -1,10 +1,11 @@
 import React from "react";
+import "./styles/Guidelines.css";
 
 export default function Guidelines() {
   return (
     <div className="guidelines">
-      <h2>Памятка</h2>
-      <pre>
+      <h2 className="guidelines-title">Памятка</h2>
+      <pre className="guidelines-text">
 {`
 Допустимые отклонения:
 
