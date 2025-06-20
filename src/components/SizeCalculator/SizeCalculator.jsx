@@ -104,7 +104,7 @@ export default function SizeCalculator() {
                 style={{
                   backgroundImage: 'url("/back.jpg")',
                   backgroundSize: 'cover',
-                  backgroundPosition: 'right',
+                  backgroundPosition: 'bottom left -100px',
                   backgroundRepeat: 'no-repeat',
                   minHeight: '1rem',
                   maxHeight: '35rem',
@@ -120,7 +120,6 @@ export default function SizeCalculator() {
               type={key === "fullName" ? "text" : "number"}
               name={key}
               id={key}
-              value={m[key]}
               onChange={handleChange}
               className="size-calc-input"
               required={key !== "fullName"}
