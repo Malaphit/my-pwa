@@ -109,7 +109,7 @@ export default function SizeCalculator() {
                   minHeight: '1rem',
                   maxHeight: '30rem',
                 }}>
-        <h1 className="size-calc-title">Калькулятор размера обуви</h1>
+        <h1 className="size-calc-title">Калькулятор размера обуви AlesandroVitorio</h1>
 
         {Object.keys(FIELD_LABELS).map((key) => (
           <div key={key} className="size-calc-row">
