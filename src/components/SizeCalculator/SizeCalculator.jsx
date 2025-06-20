@@ -107,7 +107,7 @@ export default function SizeCalculator() {
                   backgroundPosition: 'right',
                   backgroundRepeat: 'no-repeat',
                   minHeight: '1rem',
-                  maxHeight: '30rem',
+                  maxHeight: '35rem',
                 }}>
         <h1 className="size-calc-title">Калькулятор размера обуви AlesandroVitorio</h1>
 
