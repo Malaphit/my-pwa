@@ -30,6 +30,8 @@ export default function SizeCalculator() {
   const [dev, setDev] = useState(null);
   const [notes, setNotes] = useState([]);
   const [history, setHistory] = useState([]);
+  const [lastEntry, setLastEntry] = useState(null);
+
 
   useEffect(() => {
     const saved = localStorage.getItem("sizeHistory");
@@ -49,7 +51,7 @@ export default function SizeCalculator() {
     setDev(d);
     const recs = getRecommendation(d);
     setNotes(recs);
-
+  
     const entry = {
       date: new Date().toLocaleString(),
       fullName: m.fullName || null,
@@ -64,11 +66,18 @@ export default function SizeCalculator() {
       deviations: d,
       notes: recs,
     };
+  
+    setLastEntry(entry);
+  };  
 
-    const updatedHistory = [entry, ...history].slice(0, 100);
-    setHistory(updatedHistory);
-    localStorage.setItem("sizeHistory", JSON.stringify(updatedHistory));
+  const saveToHistory = () => {
+    if (!lastEntry) return;
+    const updated = [lastEntry, ...history].slice(0, 100);
+    setHistory(updated);
+    localStorage.setItem("sizeHistory", JSON.stringify(updated));
+    alert("Расчёт сохранён в историю.");
   };
+  
 
   const isFormValid = () =>
     m.length && m.punches && m.rise && m.diagonal;
@@ -139,7 +148,11 @@ export default function SizeCalculator() {
           <button onClick={() => step(+1)} disabled={!currSize} className="size-calc-step">
             +
           </button>
+        <button onClick={saveToHistory} className="size-calc-button">
+          Сохранить в историю
+        </button>
         </div>
+
 
         {currSize != null && dev && (
           <div className={`size-result ${getMatchColor(dev)}`}>

@@ -8,9 +8,14 @@ export const findSizeByLength = (lengthMm, sandalMode = false) => {
   const [min, max] = sandalMode ? [4, 8] : [8, 13];
   for (const s of SIZE_KEYS) {
     const diff = SIZE_TABLE[s].length - lengthMm;
+    if (diff >= min && diff <= max) return s;
+  }
+
+  for (const s of SIZE_KEYS) {
+    const diff = SIZE_TABLE[s].length - lengthMm;
     if (diff >= min) return s;
   }
-  return SIZE_KEYS[0] || null;
+  return null;
 };
 
 export const calculateDeviations = (size, user) => {
